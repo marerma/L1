@@ -1,0 +1,160 @@
+<!-- Задача: Взаимодействие с формами: Напишите функцию, которая получает данные из формы на веб-странице и выполняет определенные действия с этими данными, 
+  например, отправляет их на сервер или отображает всплывающее окно с результатами. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background-color: #86b2d6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .form-container {
+      width: 60%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-sizing: border-box;
+    }
+    label, select {
+      padding: 0;
+      margin: 0;
+      width: 600px;
+      height: 30px;
+      box-sizing: border-box;
+    }
+    .text-input {
+      padding-block: 0;
+      padding-inline: 0;
+      padding: 8px;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .modal {
+      width: 400px;
+      height: 400px;
+      position: absolute;
+      top: 0%;
+      left: 50%;
+      background-color: #fdbbe1;
+      z-index: 4;
+      transform: translate(-50%, 50%);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 22px;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .close:hover {
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .submit-btn {
+      width: 150px;
+      height: 50px;
+      background-color: #e479c9;
+      border-radius: 20px;
+      font-size: 18px;
+      border: 2px solid #041470;
+      margin-top: 20px;
+    }
+    .submit-btn:hover {
+      cursor: pointer;
+    }
+    .modal__item {
+      display: flex;
+      font-size: 14px;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .modal__content {
+      min-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Работа с формами</h1>
+        <form class="form-container" name="myForm">
+            <label for="name">
+                <input type="text" id="name" name="name" placeholder="Введите имя" class="text-input" />
+            </label>
+            <label for="surname">
+                <input type="text" id="surname" name="surname" placeholder="Введите фамилию" class="text-input"/>
+            </label>
+            <p>Выберете пол</p>
+            <div>
+              <label for="female">
+                <input type="radio" value="female" name="gender" id="female" checked >Женский</input>
+               </label>
+              <label for="male">
+                <input type="radio" value="male" name="gender" id="male">Мужской</input>
+              </label>
+            </div>
+            <button type="submit" class="submit-btn">Отправить</button>
+        </form>
+  <div class="modal hidden">
+    <span class="close">X закрыть</span>
+    <p>Ваша форма заполнена следующими полями</p>
+    <div class="modal__content"></div>
+  </div>
+</body>
+<script>
+  // получаем форму из дом по имени, а далее ее элементы
+  const form = document.forms.myForm;
+  const modal = document.querySelector('.modal');
+  const modalContent = document.querySelector('.modal__content');
+  const closeIcon = document.querySelector('.close');
+  const toggleModal = {
+    close() { modal.classList.add('hidden')}, 
+    open() { modal.classList.remove('hidden')}
+  };
+  closeIcon.addEventListener('click', toggleModal.close);
+
+  function handleSubmit (e) {
+    e.preventDefault();
+    const elements = form.elements;
+    const formContent = {};
+    
+    //поскольку радио инпуты имеют одинаковое имя, то сохраняем значиние только инпута со статусом checked
+    // также исключаем кнопку сабмита
+
+    for (const el of elements) {
+      if ((el.name === 'gender' && el.checked) || el.name !== 'gender' && el.tagName !== 'BUTTON') {
+        formContent[el.name] = el.value;
+      }
+    }
+
+    // заполняем модалку данными из формы
+    modalContent.innerHTML = Object.entries(formContent).map(([key, value]) => {
+        return `<div class="modal__item"><p>${key}: </p><p>${value || 'не заполнено'}</p></div>`
+    }).join('');
+    toggleModal.open();    
+  }
+
+  form.addEventListener('submit', handleSubmit)
+</script>
+</html>

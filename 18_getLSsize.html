@@ -1,0 +1,159 @@
+<!-- Подсчитать максимальный объем данных, который можно записать в localStorage вашего браузера. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      padding: 20px;
+      background-color: #c49fee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .size {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .lds-ripple {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-ripple div {
+      position: absolute;
+      border: 4px solid #dd5404;
+      opacity: 1;
+      border-radius: 50%;
+      animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .lds-ripple div:nth-child(2) {
+      animation-delay: -0.5s;
+    }
+    @keyframes lds-ripple {
+      0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+      }
+      4.9% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+      }
+      5% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+      }
+    }
+    .container {
+      display: block;
+    }
+    .hidden {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="size">Размер хранилища</h2>
+    <p >Текущий браузер: <span id="browser-name"></span></p>
+    <p >Размер хранилища: <span id="ls-size"></span></p>
+  </div>
+  <div class="lds-ripple hidden"><div></div><div></div></div>
+</body>
+<script>
+  const browserName = document.getElementById('browser-name');
+  const lsSize = document.getElementById('ls-size');
+  const loader = document.querySelector('.lds-ripple');
+  const mainInfo = document.querySelector('.container');
+
+  // доп функция для определения браузера, исключительно для ui
+  function getBrowserName () {
+    const userAgent = navigator.userAgent.toLowerCase();
+  
+    if (userAgent.includes("opera") || userAgent.includes("opr")) {
+      return "Opera";
+    } else if (userAgent.includes("edge")) {
+      return "Microsoft Edge";
+    } else if (userAgent.includes("chrome")) {
+      return "Google Chrome";
+    } else if (userAgent.includes("safari")) {
+      return "Safari";
+    } else if (userAgent.includes("firefox")) {
+      return "Mozilla Firefox";
+    } else if (userAgent.includes("trident") || userAgent.includes("msie")) {
+      return "Internet Explorer";
+    } else {
+      return "Unknown Browser";
+    }
+  }
+  browserName.textContent = getBrowserName();
+
+
+  function getLocalStorageSize() {
+
+    // очищаем сторадж перед подсчетом
+    localStorage.clear();
+
+    try {
+      // Пытаемся установить данные в localStorage до тех пор, хранилище не переполнится
+      let data = 'a'.repeat(100000); 
+      let totalData = '';
+      let i = 0;
+      
+      while (true) {
+        let key = `data_${i}`;
+        localStorage.setItem(key, data);
+        totalData += data;
+
+        // если не удалось установить строку полностью, то хранилище переполнилось и удаляем последний ключ/значение, выходим из цикла
+        if (localStorage.getItem(key) !== data) {
+          localStorage.removeItem(key);
+          break;
+        }
+        i++;
+      }
+      
+    } catch (error) {
+      // если выкинуло исключение, то localstorage переполнился и можно вернуть общий размер
+      // Вычисляем размер данных, которые удалось сохранить в localStorage (находим длину хранилища с ключами и значениями), в мб
+      let totalDataSize = JSON.stringify(localStorage).length / 1024 / 1024  // Размер в мегабайтах (МБ)
+
+      return totalDataSize.toFixed(4);
+  }
+}
+
+
+// показываем лоадер, если долго вычисляет
+  function showLoader () {
+    loader.classList.remove('hidden');
+    mainInfo.classList.add('hidden');
+    const size = getLocalStorageSize() + ' Mb';
+    loader.classList.add('hidden');
+    mainInfo.classList.remove('hidden');
+    lsSize.textContent = size;
+  }
+
+  showLoader()
+</script>
+</html>

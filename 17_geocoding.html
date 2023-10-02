@@ -1,0 +1,147 @@
+<!-- Необходимо реализовать простое поле ввода адреса с функцией геокодинга: 
+  пользователь вводит данные в поле с помощью одного из геоинформационных сервисов (Яндекс.Карты, ДаДата, GraphHopper), подбирается адрес. 
+  Найденные данные должны отображаться в выпадающем списке, из которого можно выбрать подходящее значение.
+ Реализовать дебоунсинг и защиту от троттлинга с помощью замыканий. -->
+
+ <!-- Использован сервис Яндекс, по документации https://yandex.ru/dev/geocode/doc/ru/ -->
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geocoding</title>
+    <style>
+      body {
+        width: 100vw;
+        height: 100vh;
+        background-color: #86b2d6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .form-container {
+        width: 60%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-sizing: border-box;
+      }
+      label, select {
+        padding: 0;
+        margin: 0;
+        width: 600px;
+        height: 30px;
+        box-sizing: border-box;
+      }
+      input {
+        padding-block: 0;
+        padding-inline: 0;
+        padding: 8px;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+</head>
+
+<body>
+    <h1>Геокодинг с использованием Yandex API Геокодера</h1>
+        <form class="form-container">
+            <label for="input">
+                <input type="text" id="input" placeholder="Введите адрес" />
+            </label>
+            <select name="place" id="select-place">
+                <option value=""> --Выберите подходящий адрес--</option>
+            </select>
+        </form>
+</body>
+
+<script>
+  const API_KEY = '4a0940cc-8374-4a61-8cb5-14f4b258b12f';
+  const BASE_URL = `https://geocode-maps.yandex.ru/1.x/?`;
+
+  //получение урл запроса
+  const getRequestUrl = (value) => {
+    return `${BASE_URL}apikey=${API_KEY}&geocode=${value}&format=json`
+  }
+
+  //получение списка мест по заданному запросу
+  const fetchAddresses = async (value) => {
+    try {
+      const url = getRequestUrl(value);
+      const response = await fetch(url);
+      const addresses = await response.json();
+      return addresses;
+    } catch(error) {
+      console.error(error)
+    }
+  }
+
+  //преобразование ответа в список адресов
+  const getObjectFromResponse = (response) => {
+    if (!response.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData.found) {
+      return [];
+    } 
+      return response.response.GeoObjectCollection.featureMember;
+  }
+
+  // создание из адреса элемента option
+  const createOptions = (value, content) => {
+    const opt = document.createElement('option');
+    opt.setAttribute('value', value);
+    opt.textContent = content;
+    return opt;
+  }
+  
+  //добавление в выпадающий список новых option по введенному списку адресов
+  const updateSelectUI = (list) => {
+    const root = document.getElementById('select-place');
+    for (i = 1; i < root.children.length; i++) {
+      root.children[i].remove();
+    }
+    for (const obj of list) {
+      const { name, description } = obj.GeoObject;
+      const innerText = description + ', ' + name;
+      const option = createOptions(name, innerText);
+      root.append(option);
+    }
+  }
+  const form = document.forms[0];
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+  })
+
+  // декоратор дебаунс - заводим id таймера, возвращаем функцию, которая будет вызвана с задержкой, которую мы передаем в параметре delay в ms
+  function debounce(func, delay) {
+    let timeoutId;
+    
+    return function() {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, arguments);
+      }, delay);
+    }
+  }
+
+  async function handleInput(e) {
+    const value = e.target.value;
+    const response = await fetchAddresses(value);
+    const addressList = getObjectFromResponse(response);
+    updateSelectUI(addressList)
+  }
+  const debouncedHandleInput = debounce(handleInput, 200)
+  const input = document.getElementById('input');
+  
+  input.addEventListener('input', debouncedHandleInput);
+
+</script>
+</html>

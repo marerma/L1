@@ -1,0 +1,55 @@
+<!-- Задача: Создать и добавить элемент с использованием шаблонов: 
+  Напишите функцию, которая создает новый элемент с использованием шаблонов (например, с помощью тега <template>) и добавляет его в DOM. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .postList {
+      font-size: 16px;
+      list-style: none;
+    }
+    .postItem {
+      min-width: 600px;
+      min-height: 100px;
+      border: 1px solid green;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <ul class="postList">
+    <h1> Список постов </h1>
+  </ul>
+  <template id="templ">
+    <li class="postItem">
+      <h2>Title</h2>
+      <p>Text</p>
+    </li>
+  </template>
+</body>
+<script>
+  // находим шаблон, копируем его содердимое, заполняем нужными данными и вставляем в переданный родительский элемент
+  function createPost (post, root) {
+    const templatePost = document.getElementById('templ');
+    const newPost = templatePost.content.cloneNode(true);
+    const title = newPost.querySelector('h2');
+    const text = newPost.querySelector('p'); 
+    title.textContent = post.title;
+    text.textContent = post.text;
+    root.append(newPost)
+  }
+  const rootEl = document.querySelector('.postList');
+  const posts = [{title: 'My new post#1', text:'A very short post'}, {title: 'My post#2', text:'Another very short post'}];
+  posts.forEach(p => createPost(p, rootEl))
+  
+</script>
+</html>
