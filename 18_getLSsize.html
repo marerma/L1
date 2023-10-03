@@ -109,7 +109,7 @@
   }
   browserName.textContent = getBrowserName();
 
-
+// вариант 1: наполняем локалсторадж, пока оно не переполнится. Подсчитываем длину строки объекта (ключи и значения) чеез JSON.stringify и переводим в мб
   function getLocalStorageSize() {
 
     // очищаем сторадж перед подсчетом
@@ -138,10 +138,39 @@
       // если выкинуло исключение, то localstorage переполнился и можно вернуть общий размер
       // Вычисляем размер данных, которые удалось сохранить в localStorage (находим длину хранилища с ключами и значениями), в мб
       let totalDataSize = JSON.stringify(localStorage).length / 1024 / 1024  // Размер в мегабайтах (МБ)
-
       return totalDataSize.toFixed(4);
   }
 }
+
+// вариант 2:  наполняем локалсторадж, пока оно не переполнится. Переводим объект локалстораджа (ключи и значения) в Blob и берем сумму их размеров
+function getLocalStorageSizeBlob() {
+// очищаем сторадж перед подсчетом
+  localStorage.clear();
+
+  try {
+    let data = 'a'.repeat(100000); 
+    let totalData = '';
+    let i = 0;
+    
+    while (true) {
+      let key = `data_${i}`;
+      localStorage.setItem(key, data);
+      totalData += data;
+
+      if (localStorage.getItem(key) !== data) {
+        localStorage.removeItem(key);
+        break;
+      }
+      i++;
+    }
+  } catch (error) {
+    let valuesSize = new Blob(Object.values(localStorage)).size;
+    let keysSize = new Blob(Object.keys(localStorage)).size;
+    let totalDataSize = (valuesSize + keysSize) / 1024 / 1024;
+    return totalDataSize.toFixed(4);
+  }
+}
+
 
 
 // показываем лоадер, если долго вычисляет
