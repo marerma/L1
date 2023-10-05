@@ -1,0 +1,50 @@
+<!-- Посчитайте сколько раз можно вызвать функцию document.write() внутри document.write(). Объясните результат. -->
+
+<!-- 
+  
+  https://habr.com/ru/articles/305366/ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // если просто вызывать метод внутри себя рекурсивно, то в Chrome вызывается без ограничений, 
+  // пока не переполнится стек, по итогу показывает 9632 раза - т.е. плюс-минус стандартная глубина стека в Chrome
+  let count = 0;
+
+  function callDocumentWrite1() {
+      count++;
+      try {
+        document.write(callDocumentWrite1());
+      } catch (err) {
+        console.log(err) // RangeError: Maximum call stack size exceeded
+        console.log(count); // 9633 раза
+      }
+  } 
+
+  // можно добавлять скрипт с вызовом функции внутри document.write после очередного вызова. 
+  // Скрипт будет вставляться после того тега script, в котором он был вызван.
+  // Таким образом вызов будет ограничен числом 21
+  
+  function callDocumentWrite2() {
+      count++;
+      document.write("<p>onother call</p>");
+      document.write("<script>document.write(callDocumentWrite())</scr" + "ipt>");
+  } 
+
+
+  const res = document.createElement('p');
+  const res2 = document.createElement('p');
+  res.textContent = `Итого вызовов: ${count}`;
+  res2.textContent = `Можно вызвать внутри себя: ${count - 1}`;
+  document.querySelector('body').append(res, res2)
+</script>
+
+</html>

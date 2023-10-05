@@ -1,0 +1,66 @@
+<!-- Разработайте страницу, отображающую таблицу с данными. Данные необходимо подгружать из этого источника.
+
+Требования:
+данные должны загружаться при загрузке страницы
+необходимо реализовать сортировку по убыванию и по возрастания для всех колонок
+необходимо реализовать клиентскую пагинацию (50 элементов на странице) -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table</title>
+  <style>
+    tbody tr:nth-child(odd) {
+      background-color: #04acc2;
+    }
+    .table__item td{
+      text-align: right;
+      padding: 8px;
+      font-size: 18px;
+      border: 1px dotted #3e4546;
+    }
+    .page__container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .page__item {
+      font-size: 18px;
+      font-weight: 700;
+      min-width: 30px;
+    }
+
+    .page__item:hover {
+      cursor: pointer;
+      color: blueviolet;
+    }
+
+    .page__item_active {
+      color: blueviolet;
+    }
+
+    td, th {
+      width: 200px;
+      padding: 8px;
+      border: 1px dotted #3e4546;
+    }
+
+    th span {
+      margin-right: 10px;
+    }
+    .title__sort {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+  </div>
+  <script src="./index.js"></script>
+</body>
+</html>
+
+
