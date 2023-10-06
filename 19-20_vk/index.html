@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body * {
+      box-sizing: border-box;
+    }
+    header {
+      width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .title__wrapper {
+      width: 200px;
+      height: auto;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .title__wrapper img {
+      width: 100%;
+      height: 100%;
+    }
+    .widget__list-container {
+      width: 800px;
+      height: 70vh;
+      overflow-Y: auto;
+      overflow-x: hidden;
+      margin: 0 auto;
+      background-color: #caa5e9;
+      border: 10px solid #030966;
+    }
+    .widget__list {
+      width: 100%;
+      padding-right: 30px;
+    }
+    .list {
+      list-style: none;
+      width: 100%;
+      padding: 10px;
+
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      border-bottom: 2px solid #030966;
+    }
+    .item p:nth-child(odd) {
+      font-weight: 700;
+    }
+    .photo {
+      width: 130px;
+      height: 70px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title__wrapper">
+      <img src="https://sun9-52.userapi.com/impg/99HuxVrqkvvqDsTOSwoxxaM15ZJ7HGIrq45ifw/ertK4BBB_tw.jpg?size=1280x1280&quality=95&sign=0914f1b838e3132284ed55e048abd64d&type=album" alt="logo">
+      <a href="https://vk.com/drugoekino">Ссылка на паблик</a>
+    </div>
+    <p>LocalStorage maxSize: <span id="maxSize"></span>MB</p>
+    <p>Current localStorage size: <span id="currentSize"></span>MB</p>
+  </header>
+  <div class="widget__wrapper">
+    <div class="widget__list-container">
+      <ul class="widget__list">
+        <template id="itemTempl">
+          <li class="item">
+            <p>Date: <span class="date">23.10.2023</span></p>
+            <p class="text">Text</p>
+            <p><span class="likes">5 </span> Likes</p>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </div>
+<script src="./index.js"></script>
+</body>
+</html>
