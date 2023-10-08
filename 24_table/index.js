@@ -17,7 +17,7 @@ function createElement (tag, className) {
   return el;
 }
 //функция создания селекта для сортировки, 
-//при переключении вариантов, соответствующий ключ и типа сортировки устанавливается в состоянии приложения
+//при переключении вариантов, соответствующий ключ и тип сортировки устанавливается в состоянии приложения
 //все селекты обнуляются, а активным остается только текущий, далее обновляются данные на странице
 function createSortSelect (key) {
   const select = createElement('select', 'title__sort');
@@ -50,7 +50,7 @@ function resetSelection() {
     }
   }
 }
-//функция создаяния заголовка таблицы их полученных ключей объектов
+//функция создания заголовка таблицы из полученных ключей объектов
 function createTableHead(keys) {
   const tableHead = createElement('thead', 'title__cell');
   const tableHeadCells = keys.map(el => {
@@ -103,8 +103,6 @@ function updateTableData (data) {
   table.append(newBody);
 }
 // создание блока с кликабельными страницами - число страниц получаем в зависимости от длины полученного массива
-// при переключении страниц обновляем тело таблицы, класс активной/текущей страницы и, если установлена сортировка по какому-либо
-// столбцу, то отображаем сортированные данные
 function createPagination (data, pageCount, currentPage) {
   const pagination = createElement('div', 'page__container');
   for (let i = 0; i < pageCount; i++) {
@@ -115,15 +113,19 @@ function createPagination (data, pageCount, currentPage) {
       pageItem.classList.add('page__item_active');
     }
     pagination.append(pageItem);
-    pageItem.addEventListener('click', () => {
-      APP_STATE.currentPage = pageItem.dataset.page;
-      resetPageClass(APP_STATE.currentPage);
-      APP_STATE.currentPageItems = getItemsPerPage(data, APP_STATE.currentPage);
-      sortData(APP_STATE.currentPageItems, APP_STATE.sortKey, APP_STATE.sortType);  
-      updateTableData(APP_STATE.currentPageItems);
-    });
+    pageItem.addEventListener('click', () => handlePageChange(data, pageItem.dataset.page));
   }
   return pagination;
+}
+
+// при переключении страниц обновляем тело таблицы, класс активной/текущей страницы и, если установлена сортировка по какому-либо
+// столбцу, то отображаем сортированные данные для активной страницы
+function handlePageChange (data, pageNum) {
+  APP_STATE.currentPage = pageNum;
+  resetPageClass(APP_STATE.currentPage);
+  APP_STATE.currentPageItems = getItemsPerPage(data, APP_STATE.currentPage);
+  sortData(APP_STATE.currentPageItems, APP_STATE.sortKey, APP_STATE.sortType);  
+  updateTableData(APP_STATE.currentPageItems);
 }
 //обновление активной страницы
 function resetPageClass (currentPage) {
@@ -146,7 +148,7 @@ async function getData() {
     console.error(`Oops, can't load data. Error: ${error}`);
   }
 }
-// сортировка данных по ключу и типу в зависимости от типа значения
+// сортировка данных по ключу и типу в зависимости от типа значения (разные методы сортировки для числовых и строковых значений)
 function sortData (data, sortKey, sortType) {
     switch (sortType) {
       case 'ascending':
@@ -171,7 +173,7 @@ function sortData (data, sortKey, sortType) {
         return;
     }
 }
-//получение части массива для текущей страницы
+//получение части массива для текущей страницы (по индексам начала и конца элементов для данной страницы)
 function getItemsPerPage (data, currentPage, limit = MAX_PER_PAGE) {
   let start = (+currentPage - 1) * limit;
   let end = (start + limit)

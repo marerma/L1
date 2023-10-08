@@ -1,7 +1,7 @@
 // Реализовать функцию подсчета объема памяти занимаемого данными в LocalStorage для предыдущей задачи. 
 // При изменении данных в localStorage в консоль должен выводиться объем занятой памяти / максимальный размер хранилища.
 
-// получить размер занятого текущего хранилища
+// получить размер занятого текущего хранилища в МБ
 function getSizeLS () {
   let valuesSize = new Blob(Object.values(localStorage)).size;
   let keysSize = new Blob(Object.keys(localStorage)).size;
@@ -65,16 +65,16 @@ function logLocalStorageChange() {
 const originalSetItem = localStorage.setItem;
 localStorage.setItem = function(key, value) {
   originalSetItem.apply(this, arguments);
-  handleLocalStorageChange();
+  logLocalStorageChange();
 }
 const originalRemoveItem = localStorage.removeItem;
 localStorage.removeItem = function(key, value) {
-  originalSetItem.apply(this, arguments);
-  handleLocalStorageChange();
+  originalRemoveItem.apply(this, arguments);
+  logLocalStorageChange();
 }
 
 const originalClear = localStorage.clear;
 localStorage.clear = function() {
   originalClear.apply(this, arguments);
-  handleLocalStorageChange();
+  logLocalStorageChange();
 }

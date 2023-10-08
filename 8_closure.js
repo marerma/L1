@@ -5,6 +5,7 @@
 function getFnResults (fnArray) {
   const result = [];
 
+  //возвращаем функцию, она проходи по элементам массива, если это функция - вызывает ее и записывает результат в массив с ответом
   return () => {
     for (const fn of fnArray) {
       if(typeof fn === 'function') {
@@ -14,11 +15,3 @@ function getFnResults (fnArray) {
     return result;
   }
 }
-
-const array = [
-  function() { return 1 },
-  function() { return 2 },
-  function() { return 3 },
-  function() { return 4 }
-]
-console.log(getFnResults(array)())

@@ -43,23 +43,13 @@ function showFnIndex3 (fnArray) {
   showInd(i);
 }
 
-//через стек
+// через очередь
 function showFnIndex4 (fnArray) {
-  const reversedFnArray = fnArray.reverse();
   let ind = 0;
-  while (reversedFnArray.length) {
-    let lastFn = reversedFnArray.pop();
-    lastFn();
+  while (fnArray.length) {
+    let firstFn = fnArray.shift();
+    firstFn();
     console.log(`Индекс выполненной функции ${ind}`);
     ind++;
   }
 }
-
-// const array = [
-//   function() { console.log("first") },
-//   function() { console.log("second") },
-//   function() { console.log("third") },
-//   function() { console.log("fourth") }
-// ]
-
-// showFnIndex4(array)

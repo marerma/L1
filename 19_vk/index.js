@@ -1,5 +1,4 @@
-// личный токен быстро обновляется, для проверки в live режиме вставить свой актуальный
-const TOKEN = ''
+const TOKEN = '1d7c257c1d7c257c1d7c257c7a1e69c7c811d7c1d7c257c785e9746d10f721f193ca2d2'
 // id паблика вконтакте
 const GROUP_ID = '4569';
 // макс. количество постов для одного запроса
@@ -7,9 +6,8 @@ const MAX_POST_COUNT = 4;
 // смещение - с какого поста начинать запрос, чтобы не запрашивать уже имеющиеся посты
 let offset = 0;
 let isLoading = false;
-// макс. размер хранилища
-// const MAX_LOCAL_STORAGE_SIZE = getMaxLSSize();
-const MAX_LOCAL_STORAGE_SIZE = 4;
+// макс. размер хранилища, определяем предел
+const MAX_LOCAL_STORAGE_SIZE = getMaxLSSize();
 
 // форматирование даты поста
 function convertData (timestamp) {
@@ -19,7 +17,7 @@ function convertData (timestamp) {
   return ruDate;
 }
 
-// установить в хранилище
+// сохранить в хранилище
 function setToLS (key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
@@ -33,7 +31,6 @@ function getFromLS (key) {
   return null;
 }
 
-// получить размер занятого текущего хранилища
 function getSizeLS () {
   let valuesSize = new Blob(Object.values(localStorage)).size;
   let keysSize = new Blob(Object.keys(localStorage)).size;
@@ -77,17 +74,6 @@ function getMaxLSSize () {
     }
     return maxSize;
   }
-}
-
-// обновление элементов после изменения размера хранилища
-function updateLSsizeUI () {
-  const maxSize = document.getElementById('maxSize');
-  if (maxSize.textContent !== MAX_LOCAL_STORAGE_SIZE) {
-    maxSize.textContent = MAX_LOCAL_STORAGE_SIZE;
-  }
-  let current = getSizeLS();
-  const currentSize = document.getElementById('currentSize');
-  currentSize.textContent = current;
 }
 
 // получение позиции скролла
@@ -148,8 +134,9 @@ function saveItemsToLS (items) {
 // функция для обработки ответа от vk.
 // если в ответе ошибка, то отображаем текст ошибки
 // если получили данные, то сохраняем в локальное хранилище, сдвигаем offset на макс. кол-во постов и вставляем эти новые посты в конец уже отображаемого списка
-// в конце удаляем скрипт, чтобы не множить один и  тот же скрпит. Также проверяем, не идет ли сейчас запрос, чтобы не отправлять дублирующий запрос
-function callbackFunc (result) {
+// в конце удаляем скрипт, чтобы не множить один и  тот же скрипт. 
+// Также проверяем, не идет ли сейчас запрос, чтобы не отправлять дублирующий запрос
+function handleResult (result) {
   isLoading = false;
   if (result.error) {
     const text = document.createElement('p');
@@ -163,7 +150,6 @@ function callbackFunc (result) {
     saveItemsToLS(savedPosts.concat(items)) 
     fillList(items);
   }
-  updateLSsizeUI ();
   setTimeout(() => {
     document.getElementById('vk-script')?.remove();
   }, 100);
@@ -174,7 +160,7 @@ function createScript () {
   isLoading = true;
   const script = document.createElement('SCRIPT');
   script.id = 'vk-script';
-  script.src = `https://api.vk.com/method/wall.get?owner_id=-${GROUP_ID}&offset=${offset}&count=${MAX_POST_COUNT}&v=5.131&access_token=${TOKEN}&callback=callbackFunc`;
+  script.src = `https://api.vk.com/method/wall.get?owner_id=-${GROUP_ID}&offset=${offset}&count=${MAX_POST_COUNT}&v=5.131&access_token=${TOKEN}&callback=handleResult`;
   document.getElementsByTagName("head")[0].appendChild(script);
 } 
 
@@ -189,11 +175,8 @@ function initFirstLoad () {
       createScript();
   }
 }
-
-
 window.addEventListener('DOMContentLoaded', () => {
   initFirstLoad();
-  updateLSsizeUI ();
   const listContainer = document.querySelector('.widget__list-container');
   listContainer.addEventListener('scroll', () => {
     if (checkScrollPosition() && !isLoading) {
@@ -201,11 +184,3 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   })
 });
-
-function handleLocalStorageChange() {
-  var usedBytes = 2;
-  var totalBytes = 5 * 1024 * 1024; // максимальный размер LocalStorage (5 MB)
-  
-  console.log("Занято памяти: " + usedBytes + " байт");
-  console.log("Максимальный размер хранилища: " + totalBytes + " байт");
-}

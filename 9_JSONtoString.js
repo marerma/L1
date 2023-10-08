@@ -1,7 +1,7 @@
 // Реализовать функцию конвертации JSON в строку
 // Метод JSON.stringify() преобразует значение в представляющую его нотацию JSON со следующими оговорками:
 
-// Порядок преобразования в строку свойств объектов, не являющихся массивами, не гарантируется. Не полагайтесь на порядок свойств во время преобразования.
+// Из документации: 
 // Объекты Boolean, Number и String преобразуются в соответствующие примитивные значения, в соответствии с традиционным соглашением о семантике преобразований.
 // Значение undefined, функция или символ, встреченные во время преобразования, будут либо опущены (если они найдены в объекте), либо превращены в null (если они найдены в массиве).
 
@@ -27,7 +27,7 @@ function convertJSONtoString(obj) {
     if (isArray(obj)) {
       let arrayString = [];
       for (const el of obj) {
-        const convertEl = otherType(el) ? String(null) : convertJSONtoString(el); // доп. проверка, является ли эл функцией, символом или undefined, чтобы правильно преобразовать
+        const convertEl = otherType(el) ? String(null) : convertJSONtoString(el); // доп. проверка, является ли элемент функцией, символом или undefined, чтобы правильно преобразовать
         arrayString.push(convertEl);
       }
       resultString.push('[' + arrayString.join(',') + ']');
@@ -37,7 +37,7 @@ function convertJSONtoString(obj) {
       let objString = [];
       for (const key of Object.keys(obj)) {
         const conevertedKey = convertJSONtoString(key);
-        // доп. проверка, является ли эл функцией, символом или undefined, если является - то пропускаем и переходим к след.ключу
+        // доп. проверка, является ли эл функцией, символом или undefined, если является - то пропускаем и переходим к след.ключу, так как они встретились не в массиве
         if (otherType(obj[key])) {
           continue;
         } else {
@@ -52,7 +52,7 @@ function convertJSONtoString(obj) {
 }
 
 
-// // массив с разными объектами для тестирования работы функции и проверки результата на равность со втроенным методом JSON.stringify
+// массив с разными объектами для тестирования работы функции и проверки результата на равность со втроенным методом JSON.stringify
 // const testObjects = [
 //   { x: undefined, y: Object, z: Symbol("") }, 
 //   { [Symbol.for("foo")]: "foo" }, 
@@ -67,7 +67,7 @@ function convertJSONtoString(obj) {
 //   }
 // }]
 
-// function testunction (argsArr) {
+// function testFunction (argsArr) {
 //   for (let i = 0; i < argsArr.length; i++) {
 //     const el = argsArr[i];
 //     if (JSON.stringify(el) !== convertJSONtoString(el)) {
@@ -76,3 +76,5 @@ function convertJSONtoString(obj) {
 //   }
 //   return true;
 // }
+
+// console.log(testFunction(testObjects))

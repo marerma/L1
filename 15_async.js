@@ -26,16 +26,3 @@ async function getRequest (url) {
     console.error(error);
   }
 }
-
-
-// const test = () => {
-//   return new Promise((resolve) => {
-//     setTimeout(()=> {
-//       resolve(3);
-//     }, 1000)
-//   })
-// }
-
-// const array = [getRequest('https://jsonplaceholder.typicode.com/posts?_limit=3'), test()]
-// const a = async () => await getInfo(array);
-// a().then(res => console.log(res))

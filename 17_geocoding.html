@@ -3,7 +3,7 @@
   Найденные данные должны отображаться в выпадающем списке, из которого можно выбрать подходящее значение.
  Реализовать дебоунсинг и защиту от троттлинга с помощью замыканий. -->
 
- <!-- Использован сервис Яндекс, по документации https://yandex.ru/dev/geocode/doc/ru/ -->
+ <!-- Использован сервис Яндекс API версия 2.1, по документации https://yandex.ru/dev/jsapi-v2-1/doc/ru/v2-1/ref/concepts/About -->
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -51,6 +51,7 @@
         box-sizing: border-box;
       }
     </style>
+     <script src="https://api-maps.yandex.ru/2.1/?apikey=2c71bfa7-2c7d-41b5-98a0-7460434381c7&lang=ru_RU" type="text/javascript"></script>
 </head>
 
 <body>
@@ -66,32 +67,18 @@
 </body>
 
 <script>
-  const API_KEY = '4a0940cc-8374-4a61-8cb5-14f4b258b12f';
-  const BASE_URL = `https://geocode-maps.yandex.ru/1.x/?`;
+ 
+  //получение ответа со списком мест по заданному запросу или ошибки
+  //преобразование ответа в список адресов, если в ответе ошибка или не найдены адреса - то возвращаем пустой массив, иначе выбираем нужные поле из объекта
 
-  //получение урл запроса
-  const getRequestUrl = (value) => {
-    return `${BASE_URL}apikey=${API_KEY}&geocode=${value}&format=json`
-  }
-
-  //получение списка мест по заданному запросу
   const fetchAddresses = async (value) => {
-    try {
-      const url = getRequestUrl(value);
-      const response = await fetch(url);
-      const addresses = await response.json();
-      return addresses;
-    } catch(error) {
-      console.error(error)
-    }
-  }
-
-  //преобразование ответа в список адресов
-  const getObjectFromResponse = (response) => {
-    if (!response.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData.found) {
-      return [];
-    } 
-      return response.response.GeoObjectCollection.featureMember;
+    return ymaps
+                .geocode(value)
+                .then(res => res.geoObjects.toArray().map(object => ({description: object.properties.get('description'), name: object.properties.get('name')})))
+                .catch(error => {
+                  console.error(error);
+                  return [];
+                })
   }
 
   // создание из адреса элемента option
@@ -105,12 +92,13 @@
   //добавление в выпадающий список новых option по введенному списку адресов
   const updateSelectUI = (list) => {
     const root = document.getElementById('select-place');
+    // очищаем список перед добавлением новых
     for (i = 1; i < root.children.length; i++) {
       root.children[i].remove();
     }
     for (const obj of list) {
-      const { name, description } = obj.GeoObject;
-      const innerText = description + ', ' + name;
+      const { name, description } = obj;
+      const innerText = description ? description + ', ' + name : name;
       const option = createOptions(name, innerText);
       root.append(option);
     }
@@ -132,13 +120,15 @@
     }
   }
 
+  // берем значение инпута, отправляем запрос и получаем адреса,из которых извлекаем данные объектов, если ответ вообще получен
   async function handleInput(e) {
-    const value = e.target.value;
-    const response = await fetchAddresses(value);
-    const addressList = getObjectFromResponse(response);
-    updateSelectUI(addressList)
+    const value = e.target.value.trim();
+    fetchAddresses(value)
+      .then(addressList => updateSelectUI(addressList))
+      .catch(error => console.error(error))
+    
   }
-  const debouncedHandleInput = debounce(handleInput, 200)
+  const debouncedHandleInput = debounce(handleInput, 200);
   const input = document.getElementById('input');
   
   input.addEventListener('input', debouncedHandleInput);

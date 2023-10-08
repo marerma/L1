@@ -133,11 +133,12 @@
         }
         i++;
       }
-      
     } catch (error) {
       // если выкинуло исключение, то localstorage переполнился и можно вернуть общий размер
       // Вычисляем размер данных, которые удалось сохранить в localStorage (находим длину хранилища с ключами и значениями), в мб
       let totalDataSize = JSON.stringify(localStorage).length / 1024 / 1024  // Размер в мегабайтах (МБ)
+      // очищаем сторадж после подсчета
+      localStorage.clear();
       return totalDataSize.toFixed(4);
   }
 }
@@ -167,6 +168,8 @@ function getLocalStorageSizeBlob() {
     let valuesSize = new Blob(Object.values(localStorage)).size;
     let keysSize = new Blob(Object.keys(localStorage)).size;
     let totalDataSize = (valuesSize + keysSize) / 1024 / 1024;
+    // очищаем сторадж после подсчета
+    localStorage.clear();
     return totalDataSize.toFixed(4);
   }
 }

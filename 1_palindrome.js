@@ -3,10 +3,10 @@
 // **(одинаковые буквы в разном регистре считаются равными)
 
 // с ипользованием встроенных методов строк
-
+//очищаем строку от всех символов, не являющимися буквами или цифрами
 function isPalindrom (str) {
-  let clearStr = str.replace(/[^a-z0-9]/gi, '');
-  return clearStr.toLowerCase().split('').reverse().join('') === clearStr.toLowerCase();
+  let clearStr = str.replace(/[^\p{L}\p{N}]/gu, ''); // регулярка для замены не буквенно-численных символов, любой язык
+  return clearStr.toLowerCase().split('').reverse().join('') === clearStr.toLowerCase(); // приводим строку к нижнему регистру, развиваем, разворачиваем и сравниваем с искомой очищенной строкой
 }
 
 // два указателя с проверкой, является ли символ буквой/цифрой или иным символом
@@ -22,21 +22,25 @@ function isPalindromTwoPointers (str) {
       return true;
     } else return false;
   }
-
+// идем по строке и сравниваем символ с начала и символ с конца
   while (l < r) {
     let charL = str[l];
     let charR = str[r];
+
+// если символ на левом указателе не число и не буква, двигаем левый указатель вправо
 
     if (!isAlfanumeric(charL)) {
       l++;
       continue;
     }
+// если символ на правом указателе не число и не буква, двигаем правый указатель влево
 
     if (!isAlfanumeric(charR)) {
       r--;
       continue;
     }
-
+//если символы с обоих концов не равны, то можно выйти из цикла, так как строка не палиндром, иначе продолжаем двигаться к центру. 
+// если дойдем до конца, то строка палиндром и возвращаем true
     if (charL.toLowerCase() !== charR.toLowerCase()) {
       return false;
     } else {

@@ -16,9 +16,3 @@ function closureExample () {
   }
   return logCallTimes;
 }
-
-// const fn = closureExample();
-// fn();
-// fn();
-// fn();
-// fn();

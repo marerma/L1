@@ -1,8 +1,12 @@
 <!-- Посчитайте сколько раз можно вызвать функцию document.write() внутри document.write(). Объясните результат. -->
-
 <!-- 
-  
-  https://habr.com/ru/articles/305366/ -->
+
+
+Cогласно документации WebKit глубина рекурсии для метода document.write() kCMaxWriteRecursionDepth = 21
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/WebKit/Source/core/dom/Document.cpp;l=351;drc=a30d423812ad0d766e93b0f3a53523807b50b17b
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/WebKit/Source/core/dom/Document.cpp;l=3617;drc=a30d423812ad0d766e93b0f3a53523807b50b17b 
+
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,14 +36,16 @@
   // можно добавлять скрипт с вызовом функции внутри document.write после очередного вызова. 
   // Скрипт будет вставляться после того тега script, в котором он был вызван.
   // Таким образом вызов будет ограничен числом 21
+
   
   function callDocumentWrite2() {
       count++;
       document.write("<p>onother call</p>");
-      document.write("<script>document.write(callDocumentWrite())</scr" + "ipt>");
+      document.write("<script>document.write(callDocumentWrite2())</scr" + "ipt>");
   } 
 
-
+  callDocumentWrite2();
+  
   const res = document.createElement('p');
   const res2 = document.createElement('p');
   res.textContent = `Итого вызовов: ${count}`;

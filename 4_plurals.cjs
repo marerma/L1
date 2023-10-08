@@ -9,16 +9,12 @@
 
 
 // 	Функцию надо упаковать в модуль.
-/*
- * @param {number} num
- * @param {string[]} wordsForm
- * @return {string}
- */
 
-// проверяем последние две цифры (если в диапазоне от 11 до 19 включительно, то возвразаем вторую форму).
+// проверяем последние две цифры (если в диапазоне от 11 до 19 включительно, то возвращаем вторую форму).
 // далее смотрим на поледнюю цифру - в зависимости от ее значения выбираем соотв. форму слова
+// использую шаблонные строки для формирования ответа
 
-module.exports =  function (num, wordsForm) {
+module.exports = function getPluralForm (num, wordsForm) {
   const lastDigits = num % 100;
 
   if (lastDigits > 10 && lastDigits < 20) {
@@ -31,8 +27,3 @@ module.exports =  function (num, wordsForm) {
     return  `${num} ${wordsForm[1]}`;
   }
 }
-
-// console.log(getPluralForm(121, ['пользователь', "пользователей", "пользователя"]))
-// console.log(getPluralForm(1026, ['пользователь', "пользователей", "пользователя"]))
-// console.log(getPluralForm(11, ['пользователь', "пользователей", "пользователя"]))
-// console.log(getPluralForm(104040411, ['сообщение', "сообщений", "сообщения"]))

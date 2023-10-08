@@ -2,19 +2,55 @@
 // Напишите код, который сортирует этот массив по возрастанию возраста, 
 // а при равных возрастах сортирует по алфавиту по полю name.
 
+// вспомогательная функция сравнения объектов по возрасту или - при их равнозначности - по имени
+const sortFn = (a, b) => {
+  if (a.age === b.age) {
+    return a.name.localeCompare(b.name);
+  } else {
+    return a.age - b.age;
+  }
+}
+
+
 //сортировка встроенным методом sort
 
 function sortObjectsArray (array) {
-  
-  //функция сравнения объектов по возрасту или - при их равнозначности - по имени
-  const sortFn = (a, b) => {
-    if (a.age === b.age) {
-      return a.name.localeCompare(b.name);
-    } else {
-      return a.age - b.age;
-    }
-  }
-  return array.sort(sortFn);
+  return array.sort(sortFn);  
 }
 
-console.log(sortObjectsArray([{ name: 'Mohn', age: 13 }, { name: 'John', age: 13 }, { name: 'Aria', age: 13 }]))
+
+// сортировка слиянием
+// вспомогательная функция для объединения двух массивов: на вход получает два массива
+function merge(left, right) {
+  // сюда будем складывать результат
+  let arr = []
+ 
+  // пока в каждой части есть хотя бы один элемент — выполняем цикл
+  while (left.length && right.length) {
+      // смотрим на наименьший элемент из тех, что стоят в начале обоих массивов
+      if (sortFn(left[0], right[0]) < 0) {
+          // если слева был элемент меньше — забираем его оттуда и отправляем в массив с результатом
+          arr.push(left.shift())  
+      } else {
+          // в противном случае забираем элемент из правой части
+          arr.push(right.shift()) 
+      } 
+  }
+  // возвращаем отсортированный массив и добавляем к нему в конец отсортированный остаток от какой-либо части, если её так и не обработали в цикле
+  return [ ...arr, ...left, ...right ]
+}
+
+//если массив содержит меньше 2 элементов, то возвращаем его
+function sortObjectsArray2 (array) {
+  // базовый случай для рекурсии  
+  if(array.length < 2){
+      return array 
+    }
+  // делим исходный массив примерно пополам,
+  let mid = Math.floor(array.length / 2);
+  let leftHalf = array.slice(0, mid);
+  let rightHalf = array.slice(mid);
+
+  // запускаем рекрсивное выполнение функции сортировки для каждой половины и в итоге соединям их с помощью функции merge
+  return merge(sortObjectsArray2(leftHalf), sortObjectsArray2(rightHalf))
+}

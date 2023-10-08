@@ -3,8 +3,8 @@
 
   Реализация 
   1 - через добавление стиля-анимации по клику - круг
-  2 - через setInterval
-  3 - через requestAnimationFrame
+  2 - через setInterval  по клику - квадрат
+  3 - через requestAnimationFrame  по клику - звезда
 
 -->
 
@@ -96,7 +96,7 @@
   }
 
 // в то время как timePassed идёт от 0 до 2000
-// left изменяет значение от 0px до 400px
+// квадрат сдвигается вправо по оси X
 function moveSquare(timePassed) {
   let t = `${timePassed / 5 / 10 }%`;
   square.style.transform = `translateX(${t})`;
@@ -109,11 +109,14 @@ function animate({timing, draw, duration}) {
   let start = performance.now();
 
   requestAnimationFrame(function animate(time) {
+    // timeFraction изменяется от 0 до 1
     let timeFraction = (time - start) / duration;
     if (timeFraction > 1) timeFraction = 1;
 
+     // вычисление текущего состояния анимации
     let progress = timing(timeFraction);
 
+    // отрисовка анимации 
     rotate(progress);
 
     if (timeFraction < 1) {
@@ -121,9 +124,11 @@ function animate({timing, draw, duration}) {
     }
   });
 }
+//линейная функция тайминга анимация: идёт с одной и той же скоростью
 function timing (timeFraction) {
     return timeFraction;
 }
+// непосредственно функция для реализации конкретного анимационного действия, в данном случае вращение
 function rotate(progress) {
   const grade = progress * 300 + 'deg';
   star.style.transform = `rotate(${grade})`
